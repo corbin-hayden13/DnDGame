@@ -89,12 +89,6 @@ class DnD_Character():
         # Need to add multiclassing functionality to health modifier here
         self.health = self.__multiclass_health()
 
-        if self.name == "0":
-            if gender == "M" or gender == "m":
-                self.name = fng.get_male_name()
-            else:
-                self.name = fng.get_female_name()
-
 
     def __str__(self):
         padding = " "
@@ -239,6 +233,39 @@ def main():
     return 0
 
 
+def make_character():
+    classes = []
+    levels = []
+
+    name = input("What is the name of your character? (0 for random name)")
+    out_str = "Is your character male or female? (M / F)"
+    gender = input(out_str)
+    if name == "0":
+        if gender == "M" or gender == "m":
+            name = fng.get_male_name()
+        else:
+            name = fng.get_female_name()
+
+    rolling = bool(input("Are you rolling for your stats? (True / False)"))
+    out_str = "How many classes does " + name + " have?"
+    num_classes = int(input(out_str))
+
+    for a in range(num_classes):
+        out_str = "What is class " + str(a + 1) + " of " + name + "?"
+        classes.append(input(out_str).lower())
+
+        out_str = "What is the level of " + name + "'s " + classes[a] + " class?"
+        levels.append(int(input(out_str)))
+
+    dnd_character_one = DnD_Character(name, gender, rolling, classes, levels)
+
+    print(dnd_character_one)
+
+
+# def game_loop():
+
+
+
 def print_help():
     print("Using DnD character creator (By Hayden Corbin)")
     print("First argument is bool (True, False) is multiclassing")
@@ -250,7 +277,11 @@ def print_help():
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
+    if len(sys.argv) == 2 and len(sys.argv[1]) == "help":
         sys.exit(print_help())
+
+    if len(sys.argv) == 1:  # Not using command line to run script
+        make_character()
+
 
     sys.exit(main())
