@@ -16,7 +16,6 @@ class DnDCharacter():
     barbarian = d12
     """
     def __init__(self, name, gender, rolling, char_classes, levels):
-        self.name = name
         self.char_classes = char_classes # a list of classes
         self.levels = levels # A list of levels
         self.hit_dice = []
@@ -25,6 +24,7 @@ class DnDCharacter():
         dSixClasses = ["sorcerer", "wizard"]
         dEightClasses = ["artificer", "bard", "cleric", "druid", "monk", "rouge", "warlock"]
         dTenClasses = ["fighter", "paladin", "ranger"]
+        # dTwelveClasses = ["barbarian"]
 
         for class_name in char_classes:
             if dSixClasses.count(class_name) == 1:
@@ -61,6 +61,8 @@ class DnDCharacter():
 
         # Need to add multiclassing functionality to health modifier here
         self.health = self.__multiclass_health()
+        # One nice line to initialize self.name of the object
+        self.name = name if name != "0 " else get_rand_name(gender)
 
 
     def __str__(self):
@@ -83,8 +85,23 @@ class DnDCharacter():
 
         return ret_str
 
-    def roll_check(self, roll_type, proficiency=0, expertise=False, advantage=-1):
-        # Proficiency is added onto roll
+    
+    """ @classmethod
+    def import(file_path):
+        # Reading character file to new character
+
+    """
+
+    # This is for writing the character to a file for later import
+    def export(self):
+        out_file = open("Char_" + self.name.replace(" ","") + "_Out.txt", "w")
+        out_file.write(self.name)
+        for char_class in range(len(self.char_classes)):
+            out_str = self.char_classes[char_class]
+            out_str += ":" + str(self.levels[char_class])
+            out_file.write(out_str)
+
+
         # Expertise doubles proficiency
         # advantage (-1) = nothing
         # advantage (0) = roll twice, use higher of two rolls
@@ -171,3 +188,12 @@ class DnDCharacter():
         return total_health
 
 
+    def __get_rand_name(self, gender):
+        if gender == "M" or gender == "m":
+            return fng.get_male_name()
+        else:
+            return fng.get_female_name()
+
+
+def new_character(name, gender, rolling, classes, levels):
+    return DnDCharacter(name, gender, rolling, classes, levels)
