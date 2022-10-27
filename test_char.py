@@ -1,5 +1,13 @@
 import DnDCharacter as dndchar
 
-temp_character = dndchar.new_character("0", "M", True, ["druid"], [10])
+def main():
+    charOne = dndchar.DnDCharacter("0", "m", True, ["druid", "sorcerer"], [7, 11])
+    print(charOne)
+    file_name = charOne.export()
 
-temp_character.export()
+    charTwo = dndchar.import_save("character_files/" + file_name)
+    print(charTwo)
+
+
+if __name__ == "__main__":
+    main()

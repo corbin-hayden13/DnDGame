@@ -21,7 +21,7 @@ import random as rand
 import sys
 import fantasy_name_generator as fng
 import regex as re
-import DnDCharacter
+import DnDCharacter as dndchar
 
 # This is a CharacterManager, not a creator (because DnDCharacter does this already)
 
@@ -30,11 +30,27 @@ class CharacterManager:
         self.character_list = character_list
 
     def new_character(self, list_of_stats):
-        # Create a new character object from a list of the parameters to pass
-        # self.character_list.append(new DnDCharacter())
+        name = list_of_stats[0]
+        gender = list_of_stats[1]
+        rolling = bool(list_of_stats[2])
+        char_classes = list(list_of_stats[3])
+        levels = list(list_of_stats[4])
+        for level in range(len(levels)):
+            levels[level] = int(levels[level])
 
-    def import_character(self, file_path):
-        # Read in a character file and create a new character object from it
+        self.character_list.append(dndchar.DnDCharacter(name. gender, rolling, char_classes, levels))
+
+
+    def save_character(self, name):
+        for character in self.character_list:
+            if character.get_name() == name:
+                character.export()
+
+    def import_character(self, name):
+        lst_name = list(name.split(" "))
+        search_name = lst_name[0] + "-" + lst_name[1] + ".txt"
+
+        return dndchar.import_save("character_files/" + search_name)
 
 """
 numCharacters = 8
