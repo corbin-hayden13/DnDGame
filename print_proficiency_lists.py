@@ -4,21 +4,22 @@ op_skills_prof_list = ['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', '
 
 def make_skill_profs_list(prof_list):
     num_profs = 2
-    out_list = []
+    out_str = "["
 
     for prof_org in op_skills_prof_list:
         found = False
         for prof_curr in prof_list:
             if prof_org == prof_curr:
-                out_list.append(num_profs)
+                out_str += str(num_profs) + ", "
                 found = True
 
         if not found:
-            out_list.append(0)
+            out_str += "0, "
 
-    print(out_list)
+    out_str = out_str[:len(out_str) - 2]
+    out_str += "]"
 
-    return out_list
+    print(out_str)
 
 
 def main():

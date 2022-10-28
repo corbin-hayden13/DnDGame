@@ -17,6 +17,25 @@ class CharacterClass:
     def add_saving_throws(self, list_of_throws):
         self.saving_throws.append(list(list_of_throws))
 
+    @classmethod
+    def make_skill_profs_list(prof_list):
+        num_profs = 2
+        out_list = []
+
+        for prof_org in op_skills_prof_list:
+            found = False
+            for prof_curr in prof_list:
+                if prof_org == prof_curr:
+                    out_list.append(num_profs)
+                    found = True
+
+            if not found:
+                out_list.append(0)
+
+        return out_list
+
+
+
 
 class Sorcerer(CharacterClass):
     def __init__(self):
@@ -36,28 +55,11 @@ class Artificer(CharacterClass):
                                 [0, 0, 2, 0, 0, 2, 0, 0, 2, 2, 2, 2, 0, 0, 0, 2, 0, 0])
 
 
+# Bard chooses from 3 proficiencies
 class Bard(CharacterClass):
     def __init__(self, list_of_skills):
         CharacterClass.__init__(self, "bard", 8, ["charisma", "dexterity"], [], [], [],
-                                self.make_skill_profs_list(list_of_skills))
-
-    def make_skill_profs_list(self, prof_list):
-        num_profs = 2
-        out_list = []
-
-        for prof_org in CharacterClass.op_skills_prof_list:
-            found = False
-            for prof_curr in prof_list:
-                if prof_org == prof_curr:
-                    out_list.append(num_profs)
-                    found = True
-
-            if not found:
-                out_list.append(0)
-
-        print(out_list)
-
-        return out_list
+                                CharacterClass.make_skill_profs_list(list_of_skills))
 
 
 class Cleric(CharacterClass):
@@ -71,9 +73,22 @@ class Druid(CharacterClass):
         CharacterClass.__init__(self, "druid", 8, ["intelligence", "wisdom"], [], [], [],
                                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
+
 class Monk(CharacterClass):
     def __init__(self, lvl):
-        CharacterClass.__init__(self, "monk", 8, )
+        if int(lvl) >= 14:
+        CharacterClass.__init__(self, "monk", 8, ["dexterity", "strength", "constitution", "charisma", "wisdom", "intelligence"], [], [], [],
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    else:
+        CharacterClass.__init__(self, "monk", 8, ["dexterity", "strength"], [], [], [],
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+
+# Rogue chooses from 4 proficiencies
+class Rogue(CharacterClass):
+    def __init__(self, list_of_skills):
+        CharacterClass.__init__(self, "rogue", 8, ["dexterity", "intelligence"], [], [], []
+                                CharacterClass.make_skills_prof_list(list_of_skills))
 
 
 class_list = [CharacterClass("monk",      8,  ["dexterity", "strength", "constitution", "charisma", "wisdom", "intelligence"],
