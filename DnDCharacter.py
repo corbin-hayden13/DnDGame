@@ -18,6 +18,7 @@ class DnDCharacter:
     barbarian = d12
     """
     def __init__(self, name, gender, rolling, char_classes, levels):
+        self.bank = 0
         if len(char_classes) != len(levels):
             sys.exit(1)
 
@@ -82,33 +83,41 @@ class DnDCharacter:
         return ret_str
 
 
-    # This is for writing the character to a file for later import
-    def export(self):
+    def __stats_to_file(self):
+        ret_str = ""
         file_name = self.name.replace(" ", "_") + ".txt"
         out_file = open("character_files/" + file_name, "w")
-        out_file.write(self.name.replace(" ", "_") + "_" + self.gender + "\n")
+        ret_str += self.name.replace(" ", "_") + "_" + self.gender + "\n"
 
         """ Write classes and levels of character """
         for char_class in range(len(self.char_classes)):
             # return number instead of writing string
             out_str = str(class_list.index(self.char_classes[char_class].name))
             out_str += ":"  # Acts as known delimiter
-            out_file.write(out_str)
+            ret_str += out_str
 
-        out_file.write("\n")
+        ret_str += "\n"
 
         for level in self.levels:
-            out_str = str(level) + ":"  # Acts as known delimiter
-            out_file.write(out_str)
+            ret_str += str(level) + ":"  # Acts as known delimiter
 
         """ Write character_stats """
-        out_file.write("\n")
-        out_str = ""
+        ret_str += "\n"
+        
         for stat in self.character_stats:
-            out_str += str(stat) + ":"
+            ret_str += str(stat) + ":"
 
-        out_file.write(out_str)
-        out_file.write(str(self.health))
+        ret_str += str(self.health)
+
+        return ret_str
+
+
+    # This is for writing the character to a file for later import
+    def export(self):
+        file_name = self.name.replace(" ", "_") + ".txt"
+        out_file = open("character_files/" + file_name, "w")
+        
+        out_file.write(self.__stats_to_file())
 
         return file_name
 
@@ -153,9 +162,6 @@ class DnDCharacter:
 
     # This is the template for future saving throws
     # def saving_throws(self, proficiency=0):
-
-    def get_name(self):
-        return self.name
 
 
     def set_stats(self, lst_char_stats):

@@ -14,6 +14,11 @@ class Sorcerer(CharacterClass):
         self.saving_throws = []
 
 
+class Wizard(CharacterClass):
+    pass  # Look into using this method more
+    CharacterClass.__init__("wizard", 6)
+
+
 class_list = [CharacterClass("sorcerer",  6,  ["constitution", "charisma"],
                              [0, 0, 2, 0, 2, 0, 2, 2, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0]),
               CharacterClass("wizard",    6,  ["intelligence", "wisdom"],
