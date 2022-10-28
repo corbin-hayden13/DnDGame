@@ -2,13 +2,15 @@ import copy
 import random as rand
 import sys
 import fantasy_name_generator as fng
+import CharacterClasses as ccs
 import regex as re
 
 # Constants
 class_list = ["sorcerer", "wizard", "artificer", "bard", "cleric", "druid", "monk", "rouge", "warlock",
-                      "fighter", "paladin", "ranger", "barbarian"]
+              "fighter", "paladin", "ranger", "barbarian"]
 
-class DnDCharacter():
+
+class DnDCharacter:
     """ Class hit dice:
     sorcerer, wizard = d6
     artificer, bard, cleric, druid, monk, rouge, warlock = d8
@@ -20,27 +22,11 @@ class DnDCharacter():
             sys.exit(1)
 
         self.char_classes = char_classes # a list of classes
+        for char_class in range(len(char_classes)):
+            # this sets the char_classes list to be populated with the correct CharacterClass objects
+            char_classes[char_class] = ccs.get_char_class(char_classes[char_class].lower())
+
         self.levels = levels # A list of levels
-        self.hit_dice = []
-
-        # Determine hit dice for classes
-        dSixClasses = ["sorcerer", "wizard"]
-        dEightClasses = ["artificer", "bard", "cleric", "druid", "monk", "rouge", "warlock"]
-        dTenClasses = ["fighter", "paladin", "ranger"]
-        # dTwelveClasses = ["barbarian"]
-
-        for class_name in char_classes:
-            if dSixClasses.count(class_name) == 1:
-                self.hit_dice.append(6)
-
-            elif dEightClasses.count(class_name) == 1:
-                self.hit_dice.append(8)
-
-            elif dTenClasses.count(class_name) == 1:
-                self.hit_dice.append(10)
-
-            else:  # Just default to barbarian, don't want to do error correction right now
-                self.hit_dice.append(12)
 
         # Initialize more class variables
         # strength, dexterity, constitution, intelligence, wisdom, charisma
@@ -62,20 +48,34 @@ class DnDCharacter():
 
 
     def __str__(self):
-        padding = " "
+        title_left_align = 23
+        class_left_align = len(max(class_list, key=len))  # Correct alignment for future custom classes
+        mod_right_align = 3  # because -xx is the largest modifier there can be
+        padding = "   "
 
         ret_str = self.name + ":\n"
         ret_str += "Classes:\n"
         for char_class in range(len(self.char_classes)):
-            ret_str += padding + self.char_classes[char_class]
-            ret_str += " Lvl " + str(self.levels[char_class]) + "\n"
+            ret_str += padding + " {:<{}}".format(self.char_classes[char_class].name.capitalize(), class_left_align)
+            ret_str += " Lvl {:>2}\n".format(str(self.levels[char_class]))
 
-        ret_str += "Strength Modifier: " + str(self.__calc_stat_mod(self.character_stats[0])) + "\n"
-        ret_str += "Dexterity Modifier: " + str(self.__calc_stat_mod(self.character_stats[1])) + "\n"
-        ret_str += "Constitution Modifier: " + str(self.__calc_stat_mod(self.character_stats[2])) + "\n"
-        ret_str += "Intelligence Modifier: " + str(self.__calc_stat_mod(self.character_stats[3])) + "\n"
-        ret_str += "Wisdom Modifier: " + str(self.__calc_stat_mod(self.character_stats[4])) + "\n"
-        ret_str += "Charisma Modifier: " + str(self.__calc_stat_mod(self.character_stats[5])) + "\n"
+        ret_str += "{:<{}}".format("Strength Modifier:", title_left_align)
+        ret_str += "{:>{}}\n".format(str(self.__calc_stat_mod(self.character_stats[0])), mod_right_align)
+
+        ret_str += "{:<{}}".format("Dexterity Modifier:", title_left_align)
+        ret_str += "{:>{}}\n".format(str(self.__calc_stat_mod(self.character_stats[1])), mod_right_align)
+
+        ret_str += "{:<{}}".format("Constitution Modifier:", title_left_align)
+        ret_str += "{:>{}}\n".format(str(self.__calc_stat_mod(self.character_stats[2])), mod_right_align)
+
+        ret_str += "{:<{}}".format("Intelligence Modifier:", title_left_align)
+        ret_str += "{:>{}}\n".format(str(self.__calc_stat_mod(self.character_stats[3])), mod_right_align)
+
+        ret_str += "{:<{}}".format("Wisdom Modifier:", title_left_align)
+        ret_str += "{:>{}}\n".format(str(self.__calc_stat_mod(self.character_stats[4])), mod_right_align)
+
+        ret_str += "{:<{}}".format("Charisma Modifier:", title_left_align)
+        ret_str += "{:>{}}\n".format(str(self.__calc_stat_mod(self.character_stats[5])), mod_right_align)
 
         ret_str += "\nHealth: " + str(self.health) + "\n"
 
@@ -88,9 +88,10 @@ class DnDCharacter():
         out_file = open("character_files/" + file_name, "w")
         out_file.write(self.name.replace(" ", "_") + "_" + self.gender + "\n")
 
-        """ Write classes and levels of charater """
+        """ Write classes and levels of character """
         for char_class in range(len(self.char_classes)):
-            out_str = str(class_list.index(self.char_classes[char_class]))  # return number instead of writing string
+            # return number instead of writing string
+            out_str = str(class_list.index(self.char_classes[char_class].name))
             out_str += ":"  # Acts as known delimiter
             out_file.write(out_str)
 
@@ -107,6 +108,7 @@ class DnDCharacter():
             out_str += str(stat) + ":"
 
         out_file.write(out_str)
+        out_file.write(str(self.health))
 
         return file_name
 
@@ -156,6 +158,11 @@ class DnDCharacter():
         return self.name
 
 
+    def set_stats(self, lst_char_stats):
+        self.character_stats = copy.deepcopy(lst_char_stats)
+        self.health = self.character_stats.pop()
+
+
     def __calc_stat_mod(self, stat):
         return (stat - 10) // 2
 
@@ -177,11 +184,6 @@ class DnDCharacter():
         return finalVal
 
 
-    def set_stats(self, lst_char_stats):
-        self.character_stats = copy.deepcopy(lst_char_stats)
-        self.health = self.__multiclass_health()
-
-
     def __get_health(self, char_level, hit_dice_val):
         total_health = 0
 
@@ -201,7 +203,7 @@ class DnDCharacter():
     def __multiclass_health(self):
         total_health = 0
         for level in range(len(self.levels)):
-            total_health += self.__get_health(self.levels[level], self.hit_dice[level])
+            total_health += self.__get_health(self.levels[level], self.char_classes[level].hit_dice)
 
         return total_health
 
@@ -218,8 +220,12 @@ def import_save(file_path):
     file_lines = save_file.readlines()
 
     temp_name = list(file_lines[0].split("_"))
-    name = temp_name[0] + " " + temp_name[1]
-    gender = temp_name[2]
+    name = ""
+    for title in range(len(temp_name) - 1):
+        name += temp_name[title] + " "
+
+    name = name[:len(name) - 1]  # Trim trailing space
+    gender = temp_name[len(temp_name) - 1]  # Gender is always last value in temp_name, don't know how long name is
 
     char_classes = list(file_lines[1].split(":"))
     char_classes.pop()  # Because \n will most likely be the last element of the list
@@ -233,7 +239,7 @@ def import_save(file_path):
 
     temp_char = DnDCharacter(name, gender, False, char_classes, levels)
     temp_stats = list(file_lines[3].split(":"))
-    temp_stats.pop()
+    # temp_stats.pop(): Health is that the end of the stats list in the file, don't pop!
     for stat in range(len(temp_stats)):
         temp_stats[stat] = int(temp_stats[stat])
 

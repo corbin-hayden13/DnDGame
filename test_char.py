@@ -1,7 +1,7 @@
 import DnDCharacter as dndchar
 
 def main():
-    charOne = dndchar.DnDCharacter("0", "m", True, ["druid", "sorcerer"], [7, 11])
+    charOne = dndchar.DnDCharacter("0", "m", True, ["druid", "sorcerer", "barbarian"], [7, 11, 1])
     print(charOne)
     file_name = charOne.export()
 
