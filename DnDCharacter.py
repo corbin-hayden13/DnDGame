@@ -3,6 +3,7 @@ import random as rand
 import sys
 import fantasy_name_generator as fng
 import CharacterClasses as ccs
+import Inventory as inv
 import regex as re
 
 # Constants
@@ -18,7 +19,7 @@ class DnDCharacter:
     barbarian = d12
     """
     def __init__(self, name, gender, rolling, char_classes, levels):
-        self.bank = 0
+        self.inventory = inv.Inventory()  # Keeping track of currency
         if len(char_classes) != len(levels):
             sys.exit(1)
 
@@ -46,7 +47,6 @@ class DnDCharacter:
         # One nice line to initialize self.name of the object
         self.name = name if name != "0" else self.__get_rand_name(gender)
         self.gender = gender
-
 
     def __str__(self):
         title_left_align = 23
@@ -82,7 +82,6 @@ class DnDCharacter:
 
         return ret_str
 
-
     def __stats_to_file(self):
         ret_str = ""
         file_name = self.name.replace(" ", "_") + ".txt"
@@ -111,7 +110,6 @@ class DnDCharacter:
 
         return ret_str
 
-
     # This is for writing the character to a file for later import
     def export(self):
         file_name = self.name.replace(" ", "_") + ".txt"
@@ -120,7 +118,6 @@ class DnDCharacter:
         out_file.write(self.__stats_to_file())
 
         return file_name
-
 
     def roll_check(self, roll_type, proficiency=False, expertise=False, advantage=-1):
         # Expertise doubles proficiency
@@ -159,19 +156,15 @@ class DnDCharacter:
 
         return rand.randint(1, 20) + modifier + (proficiency * (2 if expertise else 1))
 
-
     # This is the template for future saving throws
     # def saving_throws(self, proficiency=0):
-
 
     def set_stats(self, lst_char_stats):
         self.character_stats = copy.deepcopy(lst_char_stats)
         self.health = self.character_stats.pop()
 
-
     def __calc_stat_mod(self, stat):
         return (stat - 10) // 2
-
 
     def __roll_stat(self):
         finalVal = 0
@@ -189,7 +182,6 @@ class DnDCharacter:
 
         return finalVal
 
-
     def __get_health(self, char_level, hit_dice_val):
         total_health = 0
 
@@ -205,14 +197,12 @@ class DnDCharacter:
 
         return total_health if total_health >= 1 else 1
 
-
     def __multiclass_health(self):
         total_health = 0
         for level in range(len(self.levels)):
             total_health += self.__get_health(self.levels[level], self.char_classes[level].hit_dice)
 
         return total_health
-
 
     def __get_rand_name(self, gender):
         if gender == "M" or gender == "m":
@@ -223,7 +213,7 @@ class DnDCharacter:
 
 def import_save(file_path):
     save_file = open(file_path, "r")
-    file_lines = save_file.readlines()
+    file_lines = save_file.readlines()  # list containing the lines of all lines in file
 
     temp_name = list(file_lines[0].split("_"))
     name = ""
